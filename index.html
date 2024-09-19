@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Pacto Pelo Agora</title>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <style>
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid black; padding: 8px; text-align: left; }
@@ -25,7 +23,12 @@
         </tr>
     </table>
 
-    <script>
+    <script type="module">
+        // Importar funções necessárias do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBrPjPyUV6BOhFWvmKqUXOrS8nTDlH-kDI",
             authDomain: "pactopeloagora.firebaseapp.com",
@@ -36,6 +39,10 @@
             measurementId: "G-Z9NB9MQKMB"
         };
 
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         function updateStatus(message) {
             document.getElementById('statusLog').innerHTML += message + "<br>";
             console.log(message);
@@ -45,15 +52,6 @@
             document.getElementById('errorLog').innerHTML += message + "<br>";
             console.error(message);
         }
-
-        try {
-            firebase.initializeApp(firebaseConfig);
-            updateStatus("Firebase inicializado com sucesso");
-        } catch (error) {
-            updateError("Erro ao inicializar Firebase: " + error.message);
-        }
-
-        const db = firebase.firestore();
 
         function addAssinaturaToTable(doc) {
             const data = doc.data();
@@ -69,22 +67,31 @@
             document.getElementById('assinaturasTable').innerHTML += row;
         }
 
-        db.collection("assinaturas").orderBy("dataAssinatura", "desc").onSnapshot((snapshot) => {
-            updateStatus("Snapshot recebido, número de documentos: " + snapshot.size);
-            document.getElementById('assinaturasTable').innerHTML = `
-                <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Telefone</th>
-                    <th>Data de Assinatura</th>
-                </tr>
-            `;
-            snapshot.forEach((doc) => {
-                addAssinaturaToTable(doc);
+        // Função para carregar as assinaturas
+        function carregarAssinaturas() {
+            const assinaturasRef = collection(db, "assinaturas");
+            const q = query(assinaturasRef, orderBy("dataAssinatura", "desc"));
+
+            onSnapshot(q, (snapshot) => {
+                updateStatus("Snapshot recebido, número de documentos: " + snapshot.size);
+                document.getElementById('assinaturasTable').innerHTML = `
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Data de Assinatura</th>
+                    </tr>
+                `;
+                snapshot.forEach((doc) => {
+                    addAssinaturaToTable(doc);
+                });
+            }, (error) => {
+                updateError("Erro ao obter dados: " + error.message);
             });
-        }, (error) => {
-            updateError("Erro ao obter dados: " + error.message);
-        });
+        }
+
+        // Carregar assinaturas quando a página carregar
+        document.addEventListener('DOMContentLoaded', carregarAssinaturas);
     </script>
 </body>
 </html>
