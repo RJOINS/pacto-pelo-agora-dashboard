@@ -43,6 +43,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Funções de log
         function updateStatus(message) {
             document.getElementById('statusLog').innerHTML += message + "<br>";
             console.log(message);
@@ -53,6 +54,7 @@
             console.error(message);
         }
 
+        // Função para adicionar uma assinatura na tabela
         function addAssinaturaToTable(doc) {
             const data = doc.data();
             updateStatus("Dados recebidos: " + JSON.stringify(data));
