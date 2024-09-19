@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pacto Pelo Agora</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Assinaturas do Pacto Pelo Agora</h1>
+    <table id="assinaturasTable">
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Data de Assinatura</th>
+        </tr>
+    </table>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrPjPyUV6BOhFWvmKqUXOrS8nTDlH-kDI",
+            authDomain: "pactopeloagora.firebaseapp.com",
+            projectId: "pactopeloagora",
+            storageBucket: "pactopeloagora.appspot.com",
+            messagingSenderId: "628056064610",
+            appId: "1:628056064610:web:bc3a3c8d708fbc8bfe873b",
+            measurementId: "G-Z9NB9MQKMB"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function addAssinaturaToTable(doc) {
+            const data = doc.data();
+            const row = `
+                <tr>
+                    <td>${data.nome}</td>
+                    <td>${data.email}</td>
+                    <td>${data.telefone}</td>
+                    <td>${data.dataAssinatura.toDate().toLocaleString()}</td>
+                </tr>
+            `;
+            document.getElementById('assinaturasTable').innerHTML += row;
+        }
+
+        db.collection("assinaturas").orderBy("dataAssinatura", "desc").onSnapshot((snapshot) => {
+            document.getElementById('assinaturasTable').innerHTML = `
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Data de Assinatura</th>
+                </tr>
+            `;
+            snapshot.forEach((doc) => {
+                addAssinaturaToTable(doc);
+            });
+        });
+    </script>
+</body>
+</html>
