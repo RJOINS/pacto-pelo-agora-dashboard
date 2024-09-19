@@ -14,6 +14,7 @@
 </head>
 <body>
     <h1>Assinaturas do Pacto Pelo Agora</h1>
+    <div id="errorLog"></div>
     <table id="assinaturasTable">
         <tr>
             <th>Nome</th>
@@ -25,32 +26,30 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBrPjPyUV6BOhFWvmKqUXOrS8nTDlH-kDI",
-            authDomain: "pactopeloagora.firebaseapp.com",
-            projectId: "pactopeloagora",
-            storageBucket: "pactopeloagora.appspot.com",
-            messagingSenderId: "628056064610",
-            appId: "1:628056064610:web:bc3a3c8d708fbc8bfe873b",
-            measurementId: "G-Z9NB9MQKMB"
+            // Suas configurações do Firebase aqui
         };
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        console.log("Firebase inicializado");
+
         function addAssinaturaToTable(doc) {
             const data = doc.data();
+            console.log("Dados recebidos:", data);
             const row = `
                 <tr>
-                    <td>${data.nome}</td>
-                    <td>${data.email}</td>
-                    <td>${data.telefone}</td>
-                    <td>${data.dataAssinatura.toDate().toLocaleString()}</td>
+                    <td>${data.nome || ''}</td>
+                    <td>${data.email || ''}</td>
+                    <td>${data.telefone || ''}</td>
+                    <td>${data.dataAssinatura ? data.dataAssinatura.toDate().toLocaleString() : ''}</td>
                 </tr>
             `;
             document.getElementById('assinaturasTable').innerHTML += row;
         }
 
         db.collection("assinaturas").orderBy("dataAssinatura", "desc").onSnapshot((snapshot) => {
+            console.log("Snapshot recebido, número de documentos:", snapshot.size);
             document.getElementById('assinaturasTable').innerHTML = `
                 <tr>
                     <th>Nome</th>
@@ -62,6 +61,9 @@
             snapshot.forEach((doc) => {
                 addAssinaturaToTable(doc);
             });
+        }, (error) => {
+            console.error("Erro ao obter dados:", error);
+            document.getElementById('errorLog').innerHTML = `Erro ao carregar dados: ${error.message}`;
         });
     </script>
 </body>
