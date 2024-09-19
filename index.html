@@ -1,70 +1,76 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pacto Pelo Agora</title>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
-    <h1>Assinaturas do Pacto Pelo Agora</h1>
-    <div id="errorLog"></div>
-    <table id="assinaturasTable">
-        <tr>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Telefone</th>
-            <th>Data de Assinatura</th>
-        </tr>
-    </table>
+   <!DOCTYPE html>
+   <html lang="pt-BR">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Dashboard Pacto Pelo Agora</title>
+       <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+       <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+       <style>
+           table { border-collapse: collapse; width: 100%; }
+           th, td { border: 1px solid black; padding: 8px; text-align: left; }
+           th { background-color: #f2f2f2; }
+       </style>
+   </head>
+   <body>
+       <h1>Assinaturas do Pacto Pelo Agora</h1>
+       <div id="errorLog" style="color: red;"></div>
+       <table id="assinaturasTable">
+           <tr>
+               <th>Nome</th>
+               <th>Email</th>
+               <th>Telefone</th>
+               <th>Data de Assinatura</th>
+           </tr>
+       </table>
 
-    <script>
-        const firebaseConfig = {
-            // Suas configurações do Firebase aqui
-        };
+       <script>
+           const firebaseConfig = {
+               apiKey: "AIzaSyBrPjPyUV6BOhFWvmKqUXOrS8nTDlH-kDI",
+               authDomain: "pactopeloagora.firebaseapp.com",
+               projectId: "pactopeloagora",
+               storageBucket: "pactopeloagora.appspot.com",
+               messagingSenderId: "628056064610",
+               appId: "1:628056064610:web:bc3a3c8d708fbc8bfe873b",
+               measurementId: "G-Z9NB9MQKMB"
+           };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+           firebase.initializeApp(firebaseConfig);
+           const db = firebase.firestore();
 
-        console.log("Firebase inicializado");
+           console.log("Firebase inicializado");
 
-        function addAssinaturaToTable(doc) {
-            const data = doc.data();
-            console.log("Dados recebidos:", data);
-            const row = `
-                <tr>
-                    <td>${data.nome || ''}</td>
-                    <td>${data.email || ''}</td>
-                    <td>${data.telefone || ''}</td>
-                    <td>${data.dataAssinatura ? data.dataAssinatura.toDate().toLocaleString() : ''}</td>
-                </tr>
-            `;
-            document.getElementById('assinaturasTable').innerHTML += row;
-        }
+           function addAssinaturaToTable(doc) {
+               const data = doc.data();
+               console.log("Dados recebidos:", data);
+               const row = `
+                   <tr>
+                       <td>${data.nome || ''}</td>
+                       <td>${data.email || ''}</td>
+                       <td>${data.telefone || ''}</td>
+                       <td>${data.dataAssinatura ? data.dataAssinatura.toDate().toLocaleString() : ''}</td>
+                   </tr>
+               `;
+               document.getElementById('assinaturasTable').innerHTML += row;
+           }
 
-        db.collection("assinaturas").orderBy("dataAssinatura", "desc").onSnapshot((snapshot) => {
-            console.log("Snapshot recebido, número de documentos:", snapshot.size);
-            document.getElementById('assinaturasTable').innerHTML = `
-                <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Telefone</th>
-                    <th>Data de Assinatura</th>
-                </tr>
-            `;
-            snapshot.forEach((doc) => {
-                addAssinaturaToTable(doc);
-            });
-        }, (error) => {
-            console.error("Erro ao obter dados:", error);
-            document.getElementById('errorLog').innerHTML = `Erro ao carregar dados: ${error.message}`;
-        });
-    </script>
-</body>
-</html>
+           db.collection("assinaturas").orderBy("dataAssinatura", "desc").onSnapshot((snapshot) => {
+               console.log("Snapshot recebido, número de documentos:", snapshot.size);
+               document.getElementById('assinaturasTable').innerHTML = `
+                   <tr>
+                       <th>Nome</th>
+                       <th>Email</th>
+                       <th>Telefone</th>
+                       <th>Data de Assinatura</th>
+                   </tr>
+               `;
+               snapshot.forEach((doc) => {
+                   addAssinaturaToTable(doc);
+               });
+           }, (error) => {
+               console.error("Erro ao obter dados:", error);
+               document.getElementById('errorLog').innerHTML = `Erro ao carregar dados: ${error.message}`;
+           });
+       </script>
+   </body>
+   </html>
