@@ -13,7 +13,6 @@
 <body>
     <h1>Assinaturas do Pacto Pelo Agora</h1>
     <div id="errorLog" style="color: red;"></div>
-    <div id="statusLog" style="color: blue;"></div>
     <table id="assinaturasTable">
         <tr>
             <th>Nome</th>
@@ -43,12 +42,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Funções de log
-        function updateStatus(message) {
-            document.getElementById('statusLog').innerHTML += message + "<br>";
-            console.log(message);
-        }
-
+        // Funções de log de erro (mantido)
         function updateError(message) {
             document.getElementById('errorLog').innerHTML += message + "<br>";
             console.error(message);
@@ -57,7 +51,6 @@
         // Função para adicionar uma assinatura na tabela
         function addAssinaturaToTable(doc) {
             const data = doc.data();
-            updateStatus("Dados recebidos: " + JSON.stringify(data));
             const row = `
                 <tr>
                     <td>${data.nome || ''}</td>
@@ -75,7 +68,6 @@
             const q = query(assinaturasRef, orderBy("dataAssinatura", "desc"));
 
             onSnapshot(q, (snapshot) => {
-                updateStatus("Snapshot recebido, número de documentos: " + snapshot.size);
                 document.getElementById('assinaturasTable').innerHTML = `
                     <tr>
                         <th>Nome</th>
